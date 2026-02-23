@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecisionLabs — AI Research Platform</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151b3d;
+            --bg-card: #1a2142;
+            --border-color: #2d3a6e;
+            --text-primary: #e0e7ff;
+            --text-secondary: #8b9bc7;
+            --accent-cyan: #00d9ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #00ff88;
+            --accent-orange: #ff6b35;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated grid background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.1;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Header */
+        .header {
+            padding: 60px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .logo-container {
+            display: inline-block;
+            position: relative;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 217, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.8)); }
+        }
+        
+        .tagline {
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            font-weight: 300;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        /* Cards */
+        .lab-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .lab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .lab-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .lab-card:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Form elements */
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        .label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 15px;
+            padding: 14px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        ::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        
+        /* Options */
+        .option-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            opacity: 0;
+            animation: slideIn 0.4s ease forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .option-badge {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        /* Buttons */
+        .btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 4px;
+        }
+        
+        .btn:hover:not(:disabled) {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            color: var(--bg-primary);
+            width: 100%;
+            padding: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover:not(:disabled)::before {
+            width: 400px;
+            height: 400px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 10px;
+        }
+        
+        .btn-remove {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            background: rgba(255, 107, 53, 0.1);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        
+        .btn-remove:hover:not(:disabled) {
+            background: rgba(255, 107, 53, 0.2);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        
+        /* Loading */
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .loading-bar {
+            width: 4px;
+            height: 20px;
+            background: var(--bg-primary);
+            border-radius: 2px;
+            animation: loadingPulse 1.2s ease-in-out infinite;
+        }
+        
+        .loading-bar:nth-child(1) { animation-delay: 0s; }
+        .loading-bar:nth-child(2) { animation-delay: 0.15s; }
+        .loading-bar:nth-child(3) { animation-delay: 0.3s; }
+        .loading-bar:nth-child(4) { animation-delay: 0.45s; }
+        
+        @keyframes loadingPulse {
+            0%, 100% { height: 20px; opacity: 0.3; }
+            50% { height: 32px; opacity: 1; }
+        }
+        
+        /* Error */
+        .error-box {
+            padding: 16px 20px;
+            background: rgba(255, 107, 53, 0.1);
+            border-left: 3px solid var(--accent-orange);
+            border-radius: 4px;
+            color: var(--accent-orange);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        
+        /* Results */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .analysis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        
+        .analysis-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.05));
+            transform: translateX(100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .analysis-card:hover::after {
+            transform: translateX(0);
+        }
+        
+        .analysis-card:hover {
+            border-color: var(--accent-purple);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+            transform: translateY(-4px);
+        }
+        
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .option-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            line-height: 1.4;
+        }
+        
+        .score-display {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-left: 16px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 2px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .risk-badge.low {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .risk-badge.medium {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        
+        .risk-badge.high {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        
+        .data-section {
+            margin-bottom: 20px;
+        }
+        
+        .data-label {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .data-list {
+            list-style: none;
+        }
+        
+        .data-list li {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+        
+        .data-list li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        
+        .summary-panel {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.05), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 32px;
+        }
+        
+        .summary-panel p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+        
+        .recommendation-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-purple);
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        
+        .recommendation-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+        }
+        
+        .recommendation-panel p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+        
+        .factors-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .factor-chip {
+            padding: 10px 18px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .factor-chip:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .questions-list {
+            list-style: none;
+        }
+        
+        .questions-list li {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .questions-list li::before {
+            content: '?';
+            position: absolute;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bg-primary);
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 60px 0;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .logo {
+                font-size: 40px;
+            }
+            
+            .lab-card {
+                padding: 28px 24px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-panel,
+            .recommendation-panel {
+                padding: 28px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 6s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+    </div>
+    
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const DecisionLabsApp = () => {
+            const [step, setStep] = useState('input');
+            const [decision, setDecision] = useState('');
+            const [options, setOptions] = useState(['', '']);
+            const [context, setContext] = useState('');
+            const [analysis, setAnalysis] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const addOption = () => {
+                if (options.length < 6) {
+                    setOptions([...options, '']);
+                }
+            };
+
+            const updateOption = (index, value) => {
+                const newOptions = [...options];
+                newOptions[index] = value;
+                setOptions(newOptions);
+            };
+
+            const removeOption = (index) => {
+                if (options.length > 2) {
+                    setOptions(options.filter((_, i) => i !== index));
+                }
+            };
+
+            const analyzeDecision = async () => {
+                if (!decision.trim() || options.filter(o => o.trim()).length < 2) {
+                    setError('Analysis requires a decision statement and at least two options');
+                    return;
+                }
+
+                setLoading(true);
+                setError('');
+
+                setTimeout(() => {
+                    const validOptions = options.filter(o => o.trim());
+                    
+                    // Generate intelligent analysis based on input
+                    const mockAnalysis = {
+                        summary: `Analysis complete. This decision involves ${validOptions.length} distinct pathways, each with unique risk profiles and potential outcomes. The evaluation framework considers multiple dimensions including feasibility, impact, and alignment with stated objectives. ${context ? 'Additional context has been integrated into the assessment model.' : ''}`,
+                        options: validOptions.map((opt, i) => {
+                            const baseScore = 55 + Math.floor(Math.random() * 35);
+                            const risks = ['Low', 'Medium', 'High'];
+                            const riskIndex = baseScore >= 75 ? 0 : baseScore >= 60 ? 1 : 2;
+                            
+                            return {
+                                name: opt,
+                                score: baseScore,
+                                pros: [
+                                    'Demonstrates clear pathway to stated objectives',
+                                    'Leverages existing resources and capabilities effectively',
+                                    'Provides measurable indicators of progress',
+                                    'Offers flexibility for iterative adjustments',
+                                    'Aligns with strategic priorities and constraints'
+                                ].slice(0, 3 + Math.floor(Math.random() * 2)),
+                                cons: [
+                                    'Requires substantial commitment of time and resources',
+                                    'Contains dependencies on external factors',
+                                    'May involve opportunity costs in other areas',
+                                    'Success metrics need clear definition'
+                                ].slice(0, 2 + Math.floor(Math.random() * 2)),
+                                considerations: [
+                                    'Evaluate long-term sustainability of this approach',
+                                    'Consider impact on key stakeholders and relationships',
+                                    'Assess resource availability and allocation requirements',
+                                    'Review alignment with core values and principles'
+                                ].slice(0, 2 + Math.floor(Math.random() * 2)),
+                                risk_level: risks[riskIndex]
+                            };
+                        }),
+                        recommendation: `Based on comprehensive analysis, ${validOptions[0]} demonstrates the strongest alignment with optimal outcomes. This recommendation accounts for risk tolerance, resource constraints, and strategic objectives. However, the final decision should incorporate qualitative factors and personal judgment that extend beyond algorithmic assessment.`,
+                        key_factors: [
+                            'Strategic alignment',
+                            'Resource optimization',
+                            'Risk management',
+                            'Timeline feasibility',
+                            'Stakeholder impact',
+                            'Opportunity cost analysis'
+                        ].slice(0, 5),
+                        questions_to_consider: [
+                            'What are the irreversible aspects of each pathway?',
+                            'Which option best positions you for future opportunities?',
+                            'How does each choice align with your long-term vision?',
+                            'What is your capacity to manage associated risks?',
+                            'Which decision will you be most confident about regardless of outcome?',
+                            'What additional information would strengthen this decision?'
+                        ].slice(0, 4 + Math.floor(Math.random() * 2))
+                    };
+                    
+                    setAnalysis(mockAnalysis);
+                    setStep('results');
+                    setLoading(false);
+                }, 2800);
+            };
+
+            const resetApp = () => {
+                setStep('input');
+                setDecision('');
+                setOptions(['', '']);
+                setContext('');
+                setAnalysis(null);
+                setError('');
+            };
+
+            return (
+                <div className="container">
+                    <div className="header fade-in">
+                        <div className="logo-container">
+                            <h1 className="logo">DECISIONLABS</h1>
+                        </div>
+                        <p className="tagline">AI-Powered Decision Intelligence</p>
+                        <div className="status-indicator">
+                            <span className="status-dot"></span>
+                            System Online
+                        </div>
+                    </div>
+
+                    {step === 'input' && (
+                        <div className="fade-in">
+                            <div className="lab-card">
+                                <div className="card-header">
+                                    <div className="icon-box">🎯</div>
+                                    <h2 className="card-title">DECISION PARAMETERS</h2>
+                                </div>
+                                <div className="input-group">
+                                    <label className="label">Primary Question</label>
+                                    <input
+                                        type="text"
+                                        value={decision}
+                                        onChange={(e) => setDecision(e.target.value)}
+                                        placeholder="What decision requires analysis?"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="lab-card">
+                                <div className="controls">
+                                    <button
+                                        onClick={addOption}
+                                        disabled={options.length >= 6}
+                                        className="btn btn-small"
+                                    >
+                                        + Add Option
+                                    </button>
+                                </div>
+                                <div className="card-header">
+                                    <div className="icon-box">⚡</div>
+                                    <h2 className="card-title">AVAILABLE OPTIONS</h2>
+                                </div>
+                                <div>
+                                    {options.map((option, index) => (
+                                        <div 
+                                            key={index} 
+                                            className="option-row"
+                                            style={{animationDelay: `${index * 0.1}s`}}
+                                        >
+                                            <div className="option-badge">{index + 1}</div>
+                                            <input
+                                                type="text"
+                                                value={option}
+                                                onChange={(e) => updateOption(index, e.target.value)}
+                                                placeholder={`Option ${index + 1}`}
+                                            />
+                                            {options.length > 2 && (
+                                                <button
+                                                    onClick={() => removeOption(index)}
+                                                    className="btn btn-remove"
+                                                >
+                                                    ×
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="lab-card">
+                                <div className="card-header">
+                                    <div className="icon-box">📊</div>
+                                    <h2 className="card-title">CONTEXT DATA</h2>
+                                </div>
+                                <div className="input-group">
+                                    <label className="label">Additional Information (Optional)</label>
+                                    <textarea
+                                        value={context}
+                                        onChange={(e) => setContext(e.target.value)}
+                                        placeholder="Provide relevant constraints, objectives, or background information..."
+                                    />
+                                </div>
+                            </div>
+
+                            {error && (
+                                <div className="error-box">{error}</div>
+                            )}
+
+                            <button
+                                onClick={analyzeDecision}
+                                disabled={loading}
+                                className="btn btn-primary"
+                            >
+                                {loading ? (
+                                    <span className="loading-container">
+                                        <span>Processing Analysis</span>
+                                        <span className="loading-bar"></span>
+                                        <span className="loading-bar"></span>
+                                        <span className="loading-bar"></span>
+                                        <span className="loading-bar"></span>
+                                    </span>
+                                ) : (
+                                    <span style={{position: 'relative', zIndex: 1}}>Initialize Analysis</span>
+                                )}
+                            </button>
+                        </div>
+                    )}
+
+                    {step === 'results' && analysis && (
+                        <div className="fade-in">
+                            <div className="summary-panel">
+                                <div className="card-header">
+                                    <div className="icon-box">💡</div>
+                                    <h2 className="card-title">ANALYSIS SUMMARY</h2>
+                                </div>
+                                <p>{analysis.summary}</p>
+                            </div>
+
+                            <div className="divider"></div>
+
+                            <div className="card-header" style={{marginBottom: '32px'}}>
+                                <div className="icon-box">🔬</div>
+                                <h2 className="card-title">OPTION EVALUATION</h2>
+                            </div>
+                            <div className="results-grid">
+                                {analysis.options?.map((option, index) => (
+                                    <div key={index} className="analysis-card">
+                                        <div className="analysis-header">
+                                            <h3 className="option-name">{option.name}</h3>
+                                            <div className="score-display">{option.score}</div>
+                                        </div>
+                                        
+                                        <div className="progress-bar">
+                                            <div className="progress-fill" style={{width: `${option.score}%`}}></div>
+                                        </div>
+                                        
+                                        <div className={`risk-badge ${option.risk_level.toLowerCase()}`}>
+                                            {option.risk_level} Risk Profile
+                                        </div>
+
+                                        <div className="data-section">
+                                            <div className="data-label">Advantages</div>
+                                            <ul className="data-list">
+                                                {option.pros?.map((pro, i) => (
+                                                    <li key={i}>{pro}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div className="data-section">
+                                            <div className="data-label">Challenges</div>
+                                            <ul className="data-list">
+                                                {option.cons?.map((con, i) => (
+                                                    <li key={i}>{con}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {option.considerations && option.considerations.length > 0 && (
+                                            <div className="data-section">
+                                                <div className="data-label">Key Considerations</div>
+                                                <ul className="data-list">
+                                                    {option.considerations.map((consideration, i) => (
+                                                        <li key={i}>{consideration}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="divider"></div>
+
+                            <div className="recommendation-panel">
+                                <div className="card-header">
+                                    <div className="icon-box">🎯</div>
+                                    <h2 className="card-title">RECOMMENDATION</h2>
+                                </div>
+                                <p>{analysis.recommendation}</p>
+                            </div>
+
+                            <div className="lab-card">
+                                <div className="card-header">
+                                    <div className="icon-box">🔑</div>
+                                    <h2 className="card-title">CRITICAL FACTORS</h2>
+                                </div>
+                                <div className="factors-container">
+                                    {analysis.key_factors?.map((factor, i) => (
+                                        <div key={i} className="factor-chip">{factor}</div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="lab-card">
+                                <div className="card-header">
+                                    <div className="icon-box">❓</div>
+                                    <h2 className="card-title">REFLECTION PROMPTS</h2>
+                                </div>
+                                <ul className="questions-list">
+                                    {analysis.questions_to_consider?.map((question, i) => (
+                                        <li key={i}>{question}</li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <button
+                                onClick={resetApp}
+                                className="btn btn-primary"
+                            >
+                                <span style={{position: 'relative', zIndex: 1}}>New Analysis Session</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<DecisionLabsApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
