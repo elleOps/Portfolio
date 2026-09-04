@@ -427,18 +427,10 @@
       <h2 class="sectitle display">The short version</h2>
       <div class="about-grid">
         <div class="about-text reveal">
-          <p>I'm a first-year BSc Cybersecurity student at the University of Warwick, based in Coventry, UK, with a particular interest in cybersecurity, software development, and machine learning. Before starting my degree, I spent time working at the intersection of law enforcement, financial education, and technology, and I'm now channelling that experience into building things.</p>
-          <p>I served as a Cryptocurrency Investigator with the Seychelles Police Force and a Financial Education Ambassador with the Central Bank of Seychelles, and was selected as a Her CyberTracks mentee (Criminal Justice CyberTrack, delivered with GIZ and global experts including the UNODC) — experience that gave me a grounding in cybercrime, digital investigations, and OSINT.</p>
-          <p>Outside my degree, I'm teaching myself to build the tools an investigator actually needs — I've just finished a Python-based hash identifier, with a smart contract auditor in the pipeline — and working through TryHackMe and React to round out my practical skills. I'm especially interested in where security, software, and machine learning meet, and I'm looking for opportunities to explore that further.</p>
+          <p>I'm a first-year BSc Cybersecurity student at the University of Warwick, based in Coventry, UK, with a particular interest in cybersecurity, software development, and machine learning. I'm especially interested in where security, software, and machine learning meet, and I'm looking for opportunities to explore that further.</p>
+          <p>Outside my degree, I'm teaching myself to build tools, learn new programming languages and frameworks, as well as improving my practical skills. I challenge myself to new CTFs, projects, and leetcode problems whenever i can.</p>
         </div>
         <div class="factcard reveal">
-          <dl>
-            <dt>University</dt><dd>University of Warwick</dd>
-            <dt>Programme</dt><dd>BSc Cybersecurity — Year 1</dd>
-            <dt>Class of</dt><dd>2029</dd>
-            <dt>Based in</dt><dd>Coventry, UK</dd>
-            <dt>Open to</dt><dd>Relocation</dd>
-          </dl>
           <div class="langs">
             <span class="chip-label">Languages</span>
             <div class="chipwrap">
@@ -448,12 +440,23 @@
             </div>
           </div>
           <div class="langs">
-            <span class="chip-label">Toolkit</span>
+            <span class="chip-label">Programming Languages</span>
             <div class="chipwrap">
               <span class="chip">Python</span>
               <span class="chip">HTML / CSS</span>
-              <span class="chip">Linux</span>
-              <span class="chip">React (learning)</span>
+              <span class="chip">JavaScript</span>
+              <span class="chip">TypeScript</span>
+            </div>
+            <div class="langs">
+              <span class="chip-label">Toolkit</span>
+              <div class="chipwrap">
+                <span class="chip">React</span>
+                <span class="chip">Next.js</span>
+                <span class="chip">Node.js</span>
+                <span class="chip">FastAPI</span>
+                <span class="chip">Linux</span>
+                <span class="chip">SQLite</span>
+              </div>
             </div>
           </div>
         </div>
@@ -493,27 +496,55 @@
         </div>
 
         <div class="exhibit exhibit-featured reveal">
-          <span class="status pending">Early Planning</span>
-          <h3 class="display">Smart Contract Auditor</h3>
-          <p class="exhibit-tagline">A planned tool for surfacing common vulnerabilities in Solidity smart contracts.</p>
+          <span class="status complete">Complete</span>
+          <h3 class="display">roam.</h3>
+          <p class="exhibit-tagline">A minimalist travel planner that builds a sample itinerary from your destination, dates, budget, and travel interests.</p>
           <div class="exhibit-meta">
             <div class="exhibit-meta-row">
               <span class="exhibit-meta-label">The problem</span>
-              <p>Smart contracts increasingly sit at the centre of the financial crime I investigate day to day, and their vulnerabilities are usually only found after the money has already moved.</p>
+              <p>Trip planning usually starts as a blank page — a destination and a rough budget, but no obvious starting point for what the days should actually look like.</p>
             </div>
             <div class="exhibit-meta-row">
               <span class="exhibit-meta-label">The approach</span>
-              <p>Scan contract code for known vulnerability patterns — reentrancy, integer overflow, access-control gaps — as a first pass that flags what deserves closer manual review.</p>
+              <p>A React and Next.js frontend takes your destination, dates, budget, and chosen "vibes," then dynamically builds and lets you rebuild a sample itinerary from local application logic — no external AI API, so nothing to expose in a public repo.</p>
             </div>
           </div>
           <div class="chipwrap" style="margin-bottom:20px;">
-            <span class="chip">Solidity</span>
-            <span class="chip">Python</span>
-            <span class="chip">Security Tooling</span>
+            <span class="chip">React</span>
+            <span class="chip">Next.js</span>
+            <span class="chip">TypeScript</span>
+            <span class="chip">Node.js</span>
+            <span class="chip">Tailwind CSS</span>
           </div>
-          <a href="https://github.com/elleOps" target="_blank" rel="noopener">Follow progress on GitHub →</a>
+          <a href="https://roam-eta-one.vercel.app" target="_blank" rel="noopener">Live demo →</a>
+          &nbsp;·&nbsp;
+          <a href="https://github.com/elleOps/roam" target="_blank" rel="noopener">View on GitHub →</a>
         </div>
 
+        <div class="exhibit exhibit-featured reveal">
+          <span class="status complete">Complete</span>
+          <h3 class="display">Finance Tracker</h3>
+          <p class="exhibit-tagline">A full-stack personal finance tracker for recording, categorising, and monitoring income and expenses.</p>
+          <div class="exhibit-meta">
+            <div class="exhibit-meta-row">
+              <span class="exhibit-meta-label">The problem</span>
+              <p>Keeping a clear picture of income, spending, and balance across categories usually means either a clunky spreadsheet or a bloated app — I wanted something purpose-built and simple.</p>
+            </div>
+            <div class="exhibit-meta-row">
+              <span class="exhibit-meta-label">The approach</span>
+              <p>A React frontend talks to a Python FastAPI backend over a REST API, with SQLAlchemy modelling categories and transactions in SQLite. Users can add, edit, delete, and filter transactions, with a live summary endpoint calculating total income, expenses, and balance.</p>
+            </div>
+          </div>
+          <div class="chipwrap" style="margin-bottom:20px;">
+            <span class="chip">React</span>
+            <span class="chip">FastAPI</span>
+            <span class="chip">SQLAlchemy</span>
+            <span class="chip">SQLite</span>
+            <span class="chip">Python</span>
+          </div>
+          <a href="https://github.com/elleOps/finance-tracker" target="_blank" rel="noopener">View on GitHub →</a>
+        </div>
+        
         <div class="exhibit exhibit-ghost reveal">
           <span class="status" style="color:var(--ink-soft); background:var(--bg-soft);">Coming Soon</span>
           <h3 class="display">More in the works</h3>
@@ -531,13 +562,13 @@
       <div class="contact-head reveal">
         <span class="label">Contact</span>
         <h2 class="display">Let's talk.</h2>
-        <p>I'm actively applying for Spring Weeks and internships in cybersecurity, digital forensics, and financial crime. Feel free to reach out.</p>
+        <p>I'm actively applying for Spring Weeks and internships in cybersecurity, software development, and machine learning. Feel free to reach out.</p>
       </div>
       <div class="contact-links reveal">
         <a class="clink" href="mailto:wirtzelle@gmail.com" id="emailLink">✉ wirtzelle@gmail.com</a>
         <button class="clink" id="copyEmailBtn" type="button" style="cursor:pointer; font:inherit;">⧉ Copy email</button>
         <a class="clink" href="https://github.com/elleOps" target="_blank" rel="noopener">⌥ github.com/elleOps</a>
-        <a class="clink" href="https://www.linkedin.com/in/elle-wirtz-04a4bb36b" target="_blank" rel="noopener">in linkedin.com/in/elle-wirtz</a>
+        <a class="clink" href="https://www.linkedin.com/in/ellewirtz" target="_blank" rel="noopener">in linkedin.com/in/ellewirtz</a>
       </div>
       <div class="foot-bottom">
         <span>© 2026 Elle Wirtz</span>
